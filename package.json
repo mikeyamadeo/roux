@@ -1,0 +1,39 @@
+{
+  "name": "gatsby-starter-default",
+  "description": "Gatsby default starter",
+  "version": "1.0.0",
+  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "dependencies": {
+    "aws-sdk": "^2.177.0",
+    "create-react-class": "^15.6.2",
+    "firebase": "^4.8.1",
+    "gatsby": "^1.9.145",
+    "gatsby-link": "^1.6.32",
+    "gatsby-plugin-react-helmet": "^1.0.8",
+    "glamor": "^2.20.40",
+    "glamorous": "^4.11.2",
+    "prop-types": "^15.6.0",
+    "react-input-mask": "^1.1.0",
+    "react-redux": "^5.0.6",
+    "react-stripe-elements": "^1.2.1",
+    "redux": "^3.7.2",
+    "redux-firestore-middleware": "^1.2.2",
+    "redux-thunk": "^2.2.0",
+    "styled-system": "^1.1.1",
+    "webfontloader": "^1.6.28"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "license": "MIT",
+  "main": "n/a",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --trailing-comma es5 --no-semi --single-quote --write \"src/**/*.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "prettier": "^1.9.2"
+  }
+}
