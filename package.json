@@ -6,6 +6,7 @@
   "dependencies": {
     "aws-sdk": "^2.177.0",
     "create-react-class": "^15.6.2",
+    "date-fns": "^1.29.0",
     "firebase": "^4.8.1",
     "gatsby": "^1.9.145",
     "gatsby-link": "^1.6.32",

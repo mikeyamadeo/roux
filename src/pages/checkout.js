@@ -2,6 +2,15 @@ import React from 'react'
 import { connect } from 'react-redux'
 import cc from 'create-react-class'
 import pt from 'prop-types'
+import {
+  getDay,
+  addDay,
+  isToday,
+  isBefore,
+  startOfDay,
+  subMinutes,
+  addHours
+} from 'date-fns'
 import { injectStripe, Elements, CardElement } from 'react-stripe-elements'
 import {
   Box,
@@ -117,6 +126,36 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     changePhase (delta) {
       this.setState(prev => ({ phaseIndex: prev.phaseIndex + delta }))
     },
+    getNextFriday () {
+      let currentDay = getDay(new Date())
+      return addDay(new Date(), 5 - currentDay)
+    },
+    getFirstTimeslot () {
+      const nextFriday = this.getNextFriday()
+      const standardStartTime = addHours(startOfDay(nextFriday), 18)
+      if (!isToday(nextFriday)) {
+        // 18hours + 12:00 should equal 6pm
+        return standardStartTime
+      } else {
+      }
+    },
+    /**
+     * 1. get friday. add a day (saturday). get the start of day timestamp of saturday
+     * so we get a clean 12:00 rather than 11:59. subtract 30 minutes for 11:30 pm friday
+     */
+    getLastTimeslot () {
+      return subMinutes(startOfDay(addDay(this.getNexFriday())), 30)
+    },
+    // getAvailableOrderTimes () {
+    //   const friday = this.getNextFriday()
+    //   let timeslot = 6
+    //   let availableTimeslots = []
+    //   isFriday(new Date())
+    //   while (timeslot < 12) {
+    //
+    //   }
+    //   return [ '' ]
+    // },
     phaseConfig: [
       {
         onSubmitFnName: 'phaseForward',
@@ -136,7 +175,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
               onChange={context.updateField('time')}
               label='When should we deliver this to you?'
             >
-              {[ '', 15, 20, 30, 45, 60 ].map((amount, i) => (
+              {[ '', 20, 30, 45, 60 ].map((amount, i) => (
                 <option value={amount} defaultValue={''} key={amount}>
                   {amount}
                 </option>
@@ -229,6 +268,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
       }
     ],
     render () {
+      console.log(getDay(new Date()))
       return (
         <Box overflow='auto' height='100%'>
           <Box overflow='hidden'>

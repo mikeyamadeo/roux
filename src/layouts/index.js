@@ -8,7 +8,7 @@ import { settings as s } from '../UI'
 const TemplateWrapper = ({ children }) => (
   <div style={{ height: '100%' }}>
     <Helmet
-      title='Roni Provo'
+      title='Roux Provo'
       meta={
       [
           { name: 'description', content: 'Sample' },
