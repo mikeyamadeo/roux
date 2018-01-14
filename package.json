@@ -17,6 +17,7 @@
     "react-input-mask": "^1.1.0",
     "react-redux": "^5.0.6",
     "react-stripe-elements": "^1.2.1",
+    "react-stripe-elements-universal": "^1.2.0-3",
     "redux": "^3.7.2",
     "redux-firestore-middleware": "^1.2.2",
     "redux-thunk": "^2.2.0",

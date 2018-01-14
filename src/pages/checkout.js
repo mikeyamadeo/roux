@@ -7,11 +7,17 @@ import {
   addDay,
   isToday,
   isBefore,
+  isAfter,
   startOfDay,
   subMinutes,
-  addHours
+  addHours,
+  differenceInMinutes
 } from 'date-fns'
-import { injectStripe, Elements, CardElement } from 'react-stripe-elements'
+import {
+  injectStripe,
+  Elements,
+  CardElement
+} from 'react-stripe-elements-universal'
 import {
   Box,
   Flex,
@@ -132,11 +138,27 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     },
     getFirstTimeslot () {
       const nextFriday = this.getNextFriday()
+      // 18hours + 12:00 should equal 6pm
       const standardStartTime = addHours(startOfDay(nextFriday), 18)
       if (!isToday(nextFriday)) {
-        // 18hours + 12:00 should equal 6pm
         return standardStartTime
       } else {
+        // get current time
+        const now = new Date()
+        if (isAfter(now, standardStartTime)) {
+          // if time is after standardStartTime
+          // round up to next available timeslot from current time
+          const minDiff = differenceInMinutes(standardStartTime, now)
+          const hours = minDiff / 60
+          const minutes = minDiff % 60
+          let bufferHours = 1
+          if (minutes >= 30) {
+            bufferHours = 1.5
+          }
+          return addHours(standardStartTime, hours + bufferHours)
+        } else {
+          return standardStartTime
+        }
       }
     },
     /**
@@ -146,16 +168,14 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     getLastTimeslot () {
       return subMinutes(startOfDay(addDay(this.getNexFriday())), 30)
     },
-    // getAvailableOrderTimes () {
-    //   const friday = this.getNextFriday()
-    //   let timeslot = 6
-    //   let availableTimeslots = []
-    //   isFriday(new Date())
-    //   while (timeslot < 12) {
-    //
-    //   }
-    //   return [ '' ]
-    // },
+    getAvailableOrderTimes () {
+      const begin = this.getFirstTimeslot()
+      const end = this.getLastTimeslot()
+      // while (timeslot < 12) {
+      //
+      // }
+      return [ '' ]
+    },
     phaseConfig: [
       {
         onSubmitFnName: 'phaseForward',
