@@ -4,14 +4,16 @@ import cc from 'create-react-class'
 import pt from 'prop-types'
 import {
   getDay,
-  addDay,
+  addDays,
   isToday,
   isBefore,
   isAfter,
   startOfDay,
   subMinutes,
   addHours,
-  differenceInMinutes
+  differenceInMinutes,
+  addMinutes,
+  format
 } from 'date-fns'
 import {
   injectStripe,
@@ -29,14 +31,15 @@ import {
   SelectField
 } from '../UI'
 import QuantityInput from './components/QuantityInput'
+import { pick } from '../utils'
 // import { selectors as orderSelectors } from 'App/views/PlaceOrder/state/order'
-// import {
-//   placeOrder,
-//   updateConsumer,
-//   createConsumer,
-//   selectors,
-//   listenForConsumerUpdates
-// } from './state'
+import {
+  placeOrder,
+  // updateConsumer,
+  // createConsumer,
+  // listenForConsumerUpdates
+  selectors
+} from './state'
 const runOnCondition = ({ fn, condition, interval }) => (function run () {
   if (condition()) {
     return fn()
@@ -66,8 +69,7 @@ const Fieldset = ({ label, children }) => (
 )
 
 const Checkout = connect(state => ({}), (dispatch, props) => ({
-  // placeOrder: details => dispatch(placeOrder(props.match.params)(details))
-  placeOrder: () => ({})
+  placeOrder: details => dispatch(placeOrder(props.match.params)(details))
 }))(
   cc({
     propTypes: { tax: pt.number, subtotal: pt.number, total: pt.number },
@@ -104,21 +106,22 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
        * TODO: What if the transaction hangs indefinitely? we should set a timeout to stop
        * the loading view and instruct the user
        */
-      this.setState(
-        prev => ({ isProcessingOrder: true, transactionError: undefined }),
-        this.props.placeOrder({ token: this.state.token }, this.state)
-      )
+      this.props.placeOrder(pick([ 'token' ], this.state))
     },
     /**
      * 1. we can't process the order without a token. So we'll wait until we get
      * one by setting a timeout.
      */
     completeOrder () {
-      runOnCondition({
-        fn: this.processOrder,
-        condition: () => this.state.token,
-        interval: 100
-      })
+      this.setState(
+        prev => ({ isProcessingOrder: true, transactionError: undefined }),
+        () =>
+          runOnCondition({
+            fn: this.processOrder,
+            condition: () => this.state.token,
+            interval: 100
+          })
+      )
     },
     storeToken ({ token }) {
       this.setState(prev => ({ token }))
@@ -134,7 +137,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     },
     getNextFriday () {
       let currentDay = getDay(new Date())
-      return addDay(new Date(), 5 - currentDay)
+      return addDays(new Date(), 5 - currentDay)
     },
     getFirstTimeslot () {
       const nextFriday = this.getNextFriday()
@@ -166,43 +169,62 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
      * so we get a clean 12:00 rather than 11:59. subtract 30 minutes for 11:30 pm friday
      */
     getLastTimeslot () {
-      return subMinutes(startOfDay(addDay(this.getNexFriday())), 30)
+      return subMinutes(startOfDay(addDays(this.getNextFriday(), 1)), 30)
     },
     getAvailableOrderTimes () {
-      const begin = this.getFirstTimeslot()
+      let timeslot = this.getFirstTimeslot()
       const end = this.getLastTimeslot()
-      // while (timeslot < 12) {
-      //
-      // }
-      return [ '' ]
+      let timeslots = []
+      while (isBefore(timeslot, end)) {
+        timeslots.push(timeslot)
+        timeslot = addMinutes(timeslot, 30)
+      }
+      return timeslots
     },
     phaseConfig: [
       {
         onSubmitFnName: 'phaseForward',
         fieldsetLabel: 'Order Info',
-        renderMain: context => (
-          <Box>
-            <Box mt={3} pb={3}>
-              <QuantityInput
-                label='How many orders do you want?'
-                onChange={quantity => context.setState(prev => ({ quantity }))}
-                quantity={context.state.quantity}
-                inputSize={3}
-              />
+        renderMain: context => {
+          const times = context.getAvailableOrderTimes()
+          return (
+            <Box>
+              <Box mt={3} pb={3}>
+                <QuantityInput
+                  label='How many orders do you want?'
+                  onChange={
+                    quantity => context.setState(prev => ({ quantity }))
+                  }
+                  quantity={context.state.quantity}
+                  inputSize={3}
+                />
+              </Box>
+              <SelectField
+                value={context.state.time}
+                onChange={context.updateField('time')}
+                label={
+                  `When should we deliver this to you on ${format(
+                    times[0],
+                    'Do'
+                  )}?`
+                }
+              >
+                <option defaultValue={''} />
+                {times.map((timestamp, i) => {
+                  const timespan = `${format(timestamp, 'ddd')} ${format(
+                      timestamp,
+                      'h:mm a'
+                    )} - ${format(addMinutes(timestamp, 15), 'h:mm a')}`
+                  return (
+                    <option value={timespan} defaultValue={''} key={i}>
+                      {timespan}
+                    </option>
+                  )
+                })}
+              </SelectField>
             </Box>
-            <SelectField
-              value={context.state.time}
-              onChange={context.updateField('time')}
-              label='When should we deliver this to you?'
-            >
-              {[ '', 20, 30, 45, 60 ].map((amount, i) => (
-                <option value={amount} defaultValue={''} key={amount}>
-                  {amount}
-                </option>
-                ))}
-            </SelectField>
-          </Box>
-        ),
+          )
+        },
         renderFooter: context => (
           <Box>
             <Button type='submit'>
@@ -218,7 +240,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
           <Box>
             <InputField
               label='name'
-              value={context.state.firstName}
+              value={context.state.name}
               onChange={context.updateField('name')}
             />
             <InputField
@@ -256,9 +278,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
         onSubmitFnName: 'completeOrder',
         fieldsetLabel: 'Payment',
         renderMain: context => (
-          <Elements>
-            <CardForm onTokenReception={context.storeToken} />
-          </Elements>
+          <Box>Card</Box>
         ),
         renderFooter: context => (
           <Box>
@@ -276,7 +296,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
               }
             </Box>
             <Box>
-              <Button type='submit'>
+              <Button type='submit' disabled={!context.state.token}>
                 Complete Order
               </Button>
               <Flex onClick={context.phaseBack} cursor='pointer' p={2}>
@@ -288,7 +308,11 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
       }
     ],
     render () {
-      console.log(getDay(new Date()))
+      // console.log(getDay(new Date()), this.getAvailableOrderTimes())
+
+      // <Elements>
+      //   <CardForm onTokenReception={context.storeToken} />
+      // </Elements>
       return (
         <Box overflow='auto' height='100%'>
           <Box overflow='hidden'>

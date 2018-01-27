@@ -1,4 +1,4 @@
-export const fonts = { primary: 'Playfair Display' }
+export const fonts = { primary: 'system-ui' }
 
 export const baseFontSize = 16
 

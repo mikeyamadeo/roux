@@ -8,8 +8,8 @@ const Paddle = ({ size, onClick, children, hide }) => (
     onClick={onClick}
     justify='center'
     align='center'
-    border={`solid 1px ${s.colors.textOnLight}`}
-    borderRadius='50%'
+    border={`solid 1px black`}
+    border-radius='50%'
     w={32}
     height={32}
     cursor='pointer'
@@ -59,7 +59,7 @@ const QuantityInput = cc({
               onClick={this.decrementQuantity}
               hide={!(quantity > minimum)}
             >
-              <Box mt='-2px'>
+              <Box mt='-6px'>
                 -
               </Box>
             </Paddle>
@@ -79,7 +79,9 @@ const QuantityInput = cc({
               </Box>
             </Flex>
             <Paddle size={inputSize} onClick={this.incrementQuantity}>
-              +
+              <Box mt='-6px'>
+                +
+              </Box>
             </Paddle>
           </Flex>
         </Flex>
