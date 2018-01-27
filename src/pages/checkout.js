@@ -277,9 +277,7 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
       {
         onSubmitFnName: 'completeOrder',
         fieldsetLabel: 'Payment',
-        renderMain: context => (
-          <Box>Card</Box>
-        ),
+        renderMain: context => <Box>Card</Box>,
         renderFooter: context => (
           <Box>
             <Box px={1}>
@@ -309,7 +307,6 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     ],
     render () {
       // console.log(getDay(new Date()), this.getAvailableOrderTimes())
-
       // <Elements>
       //   <CardForm onTokenReception={context.storeToken} />
       // </Elements>
@@ -408,4 +405,4 @@ const LineItem = ({ label, value, hasTopline, bolded }) => (
   </Flex>
 )
 
-export default Checkout
+export default () => <Box>hi</Box>
