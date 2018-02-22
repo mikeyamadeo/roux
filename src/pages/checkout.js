@@ -30,7 +30,7 @@ import {
   InputField,
   SelectField
 } from '../UI'
-import QuantityInput from './components/QuantityInput'
+import QuantityInput from '../components/QuantityInput'
 import { pick } from '../utils'
 // import { selectors as orderSelectors } from 'App/views/PlaceOrder/state/order'
 import {
@@ -39,7 +39,7 @@ import {
   // createConsumer,
   // listenForConsumerUpdates
   selectors
-} from './state'
+} from '../appstate'
 const runOnCondition = ({ fn, condition, interval }) => (function run () {
   if (condition()) {
     return fn()
@@ -277,7 +277,13 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
       {
         onSubmitFnName: 'completeOrder',
         fieldsetLabel: 'Payment',
-        renderMain: context => <Box>Card</Box>,
+        renderMain: context => (
+          <Box>
+            <Elements>
+              <CardForm onTokenReception={context.storeToken} />
+            </Elements>
+          </Box>
+        ),
         renderFooter: context => (
           <Box>
             <Box px={1}>
@@ -307,9 +313,6 @@ const Checkout = connect(state => ({}), (dispatch, props) => ({
     ],
     render () {
       // console.log(getDay(new Date()), this.getAvailableOrderTimes())
-      // <Elements>
-      //   <CardForm onTokenReception={context.storeToken} />
-      // </Elements>
       return (
         <Box overflow='auto' height='100%'>
           <Box overflow='hidden'>
@@ -405,4 +408,4 @@ const LineItem = ({ label, value, hasTopline, bolded }) => (
   </Flex>
 )
 
-export default () => <Box>hi</Box>
+export default Checkout

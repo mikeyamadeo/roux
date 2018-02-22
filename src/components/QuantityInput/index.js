@@ -1,7 +1,7 @@
 import React from 'react'
 import cc from 'create-react-class'
 import pt from 'prop-types'
-import { NoSelect, Flex, Box, Text, settings as s } from '../../../UI'
+import { NoSelect, Flex, Box, Text, settings as s } from '../../UI'
 
 const Paddle = ({ size, onClick, children, hide }) => (
   <Flex

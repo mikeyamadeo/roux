@@ -4,7 +4,7 @@ import apiMiddleware from '../config/api'
 
 let store = {}
 
-const reducer = require('../pages/state').default
+const reducer = require('../appstate').default
 
 const coreMiddleware = applyMiddleware(thunk, apiMiddleware)
 
