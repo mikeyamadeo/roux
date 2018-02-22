@@ -6452,12 +6452,6 @@ react-stripe-elements-universal@^1.2.0-3:
   dependencies:
     prop-types "^15.5.10"
 
-react-stripe-elements@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/react-stripe-elements/-/react-stripe-elements-1.2.1.tgz#1e385fe645494e492b79ae04f67658b1020cfa25"
-  dependencies:
-    prop-types "^15.5.10"
-
 react@^15.6.0:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.6.2.tgz#dba0434ab439cfe82f108f0f511663908179aa72"
