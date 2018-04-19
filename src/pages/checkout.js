@@ -57,7 +57,9 @@ const Fieldset = ({ label, children }) => (
       borderTopLeftRadius='5px'
       borderTopRightRadius='5px'
       bg='black'
-      backgroundImage={`url("/static/roux-pattern-white.png")`}
+      backgroundImage={
+        `url("https://firebasestorage.googleapis.com/v0/b/roux-live.appspot.com/o/assets%2Froux-pattern-white.png?alt=media&token=cf378882-9c5a-48cd-9717-fd65202411bf")`
+      }
       backgroundSize={`350px`}
     >
       <Title fontSize={4} onDark>{label}</Title>
